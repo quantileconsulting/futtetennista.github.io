@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0" />
+  <!-- MUST in hex format, may the same as header-color. This color is for android chrome browser. -->
+  <meta name="theme-color" content="#5c6bc0">
+
+  <!-- Metadata. -->
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon"><link rel="shortcut icon" href="../../images/favicons/favicon32.png"><link rel="apple-touch-icon-precomposed" sizes="144x144" href="../../images/favicons/favicon144.png"><link rel="apple-touch-icon-precomposed" sizes="114x114" href="../../images/favicons/favicon114.png"><link rel="apple-touch-icon-precomposed" sizes="72x72" href="../../images/favicons/favicon72.png"><link rel="apple-touch-icon-precomposed" sizes="57x57" href="../../images/favicons/favicon57.png">
+  <meta name="keywords" content="hakyll,static site generator,static,site,generator,haskell,blog" />
+  <title>Deploy Yesod Applications to Heroku</title>
+  <meta name="description" content="In this post I will show you step by step guide on how to deploy an yesod application to heroku, with optional support of postgresql. If you follow this guide a">
+  <link rel="canonical" href="../../posts/haskell/2018-04-27-yesod-on-heroku.html">
+  <link rel="alternate" type="application/atom+xml" title="Deploy Yesod Applications to Heroku" href="../../feed.xml" />
+
+  <!-- Stylesheets. -->
+  <link rel="stylesheet" href="../../lib/materialize/css/materialize.min.css">
+  <link rel="stylesheet" href="../../css/main.css">
+  <link media="all" rel="stylesheet" type="text/css" href="../../lib/mdi/css/materialdesignicons.min.css">
+  <link rel="stylesheet" href="../../lib/material-scrolltop/material-scrolltop.css">
+
+  <noscript>
+  <div class="notice-warning noscript">You don't have javascript enabled. Good luck! :(</div>
+</noscript>
+
+<!--[if IE]>
+  <div class="notice-warning">Oh, you are using Internet Explorer! Good luck... :(</div>
+<![endif]-->
+
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+      <nav class="nav-extended indigo lighten-1">
+        <div class="nav-wrapper">
+  <span class="site-title">Futtetennismo</span>
+  <a href="#" data-activates="mobile-navbar" class="button-collapse">
+    <i class="mdi mdi-menu white-text"></i>
+  </a>
+
+  <ul id="nav-mobile" class="right hide-on-med-and-down">
+    <li>
+      <a href="../../" class="white-text">
+        <i class="mdi mdi-home left indigo-text text-lighten-3"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../archive.html" class="white-text">
+        <i class="mdi mdi-archive left indigo-text text-lighten-3"></i>
+        Archive
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="white-text">
+        <i class="mdi mdi-account-circle left indigo-text text-lighten-3"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../imprint.html" class="white-text">
+        <i class="mdi mdi-settings left indigo-text text-lighten-3"></i>
+        Imprint
+      </a>
+    </li>
+    <li>
+      <a href="../../feed.xml" class="white-text">
+        <i class="mdi mdi-rss left indigo-text text-lighten-3"></i>
+        Feed
+      </a>
+    </li>
+  </ul>
+
+  <ul class="side-nav" id="mobile-navbar">
+    <li>
+      <a href="../../" class="waves-effect waves-teal black-text">
+        <i class="mdi mdi-home left green-text"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../archive.html" class="waves-effect waves-teal black-text">
+        <i class="mdi mdi-archive left indigo-text text-lighten-3"></i>
+        Archive
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="waves-effect waves-teal black-text">
+        <i class="mdi mdi-account-circle left blue-text"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../imprint.html" class="waves-effect waves-teal black-text">
+        <i class="mdi mdi-settings left blue-text"></i>
+        Imprint
+      </a>
+    </li>
+    <li>
+      <a href="../../feed.xml" class="waves-effect waves-teal black-text">
+        <i class="mdi mdi-rss left red-text"></i>
+        Feed
+      </a>
+    </li>
+  </ul>
+</div>
+
+      </nav>
+    </header>
+
+    <div class="site-container" id="tab-main">
+      <div class="wrapper">
+        <div class="post-ribbon"></div>
+
+<div class="container post-container">
+  <div class="post-page card-panel z-depth-2">
+    <div class="post-section">
+
+      <p class="grey-text">
+        <i class="mdi mdi-calendar"></i>&nbsp;
+        Posted on April 27, 2018
+        
+          &nbsp;&nbsp;<i class="mdi mdi-account-circle"></i>&nbsp;
+          by cohomology
+        
+        &nbsp;
+        
+          <i class="mdi mdi-folder"></i>&nbsp;
+          <span class="capitalize"><a href="../../categories/haskell.html">haskell</a></span>
+          <!-- &emsp;<i class="mdi mdi-refresh"></i>&nbsp;UPDATE: {% if page.update %}{{ page.update | date: "%b %-d, %Y" }}{% else %}{{ page.last_modified_at | date: "%b %-d, %Y" }}{% endif %} -->
+        
+      </p>
+
+      <div class="post-header">
+        <h1 class="post-title">Deploy Yesod Applications to Heroku</h1>
+
+        
+          <i class="post-tag mdi mdi-tag-multiple waves-effect waves-light"></i>
+          <div class="chip"><a href="../../tags/haskell.html">haskell</a>, <a href="../../tags/yesod.html">yesod</a>, <a href="../../tags/heroku.html">heroku</a>, <a href="../../tags/postgresql.html">postgresql</a></div>
+        
+      </div>
+
+      <article class="post-content">
+        <p>In this post I will show you step by step guide on how to deploy an yesod application to heroku, with optional support of postgresql. If you follow this guide along, you should have a demo application running on heroku inthe end.</p>
+<!--more-->
+<p>If you have not installed the heroku cli tools on your local computer, please do so now. I recommend that you follow the heroku documentation to install the cli tools and add your personal ssh key. You will also need to install the stack tool for building haskell applications on your local computer. Then come back to this guide.</p>
+<h3 id="create-a-new-project-and-set-up-git">Create a new project and set up git</h3>
+<ol style="list-style-type: decimal">
+<li><p><code>stack new myproj yesod-postgres</code> to have a new project created by <code>stack</code> using the <code>yesod-postgres</code> template. I assume you want to call your project <code>myproj</code>, for instance.</p></li>
+<li><p>Go to your project folder and do</p>
+<pre class="shell"><code>git init
+git add .
+git commit -m &quot;initial commit&quot;</code></pre></li>
+</ol>
+<h3 id="create-a-project-on-heroku">Create a project on heroku</h3>
+<ol style="list-style-type: decimal">
+<li>Create a project on heroku server: <code>heroku apps:create appname -b    https://github.com/mfine/heroku-buildpack-stack.git</code>. Note we are using a special buildpack for deloying haskell application to heroku.</li>
+<li><p>Add the free “Hobby Dev Plan” posgresql add-on: <code>heroku addon:add    heroku-postgresql:hobby-dev</code>. More detalis <a href="https://devcenter.heroku.com/articles/heroku-postgresql#promote-your-database-and-begin-using-it">here</a>.</p></li>
+<li><p>Now you need to get the connection info for the pg database by <code>heroku    pg:credentials:url DATABASE</code> and the output will be sth. in the line of</p>
+<pre><code>   Connection information for default credential.
+   Connection info string:
+  &quot;dbname=DBNAME host=HOSTNAME
+  port=5432 user=USERNAME
+  password=PASSWORD
+  sslmode=require&quot;
+  Connection URL:
+     postgres://USERNAME:PASSWORD@HOSTNAME:5432/DBNAME</code></pre></li>
+<li><p>Now <code>cd</code> into the <code>config</code> directory in you project folder and open up the <code>settings.yml</code> file and find the sectin called <code>database</code> and replace the credentials with what you find in previous step.</p></li>
+<li><p>Create <code>Procfile</code> in the root of your project directory and fill it with the following lines:</p>
+<pre><code>web: myproj</code></pre>
+<p>where myproj is the name you pick for your project(replace it with your real project name).</p></li>
+</ol>
+<h3 id="deploy-it">Deploy it</h3>
+<p>Now your project is ready to be deployed! Just do <code>git push heroku</code>, go grab a drink and come back in 20 minutes or so and you should see the demo application running on heroku! Congratulations!</p>
+      </article>
+
+      
+      </div>
+    </div>
+
+    <footer class="page-footer indigo lighten-1">
+
+  <div class="footer-copyright">
+
+    <div class="container">
+      © 2012-2017 <a class="red-text text-accent-1" href="../../about.html">futtetennista</a>, under
+      <a class="red-text text-accent-1" href="https://creativecommons.org/licenses/by-sa/4.0/"> CC BY-SA 4.0</a>.&nbsp;
+      Site proudly generated by <a class="red-text text-accent-1" href="http://jaspervdj.be/hakyll">Hakyll</a>,&nbsp;
+      original Jekyll theme by <a class="red-text text-accent-1" href="https://github.com/mumuxme/materialize-jekyll">mumuxme</a>.
+    </div>
+
+  </div>
+
+</footer>
+
+
+    <!-- scrolltop button -->
+    <button class="material-scrolltop waves-effect waves-light hide-on-small-only" type="button">
+      <i class="mdi mdi-arrow-up-bold small white-text"></i>
+    </button>
+
+    <!-- jquery -->
+    <script type="text/javascript" src="../../lib/jquery-min.js"></script>
+    <!-- materialize -->
+    <script src="../../lib/materialize/js/materialize.min.js"></script>
+    <!-- <\!-- Material ScrollTop plugin -\-> -->
+    <script src="../../lib/material-scrolltop/material-scrolltop.js"></script>
+    <!-- main -->
+    <script src="../../js/init.js"></script>
+    <script src="../../js/main.js"></script>
+
+  </body>
+
+</html>
