@@ -4,7 +4,7 @@ author: cohomology
 tags: haskell, yesod, heroku, postgresql
 ---
 
-In this post I will show you step by step guide on how to deploy an yesod application 
+In this post I will show you a step by step guide on how to deploy an yesod application 
 to heroku, with optional support of postgresql. If you follow this guide along,
 you should have a demo application running on heroku inthe end.
 
@@ -41,14 +41,14 @@ git commit -m "initial commit"
 3. Now you need to get the connection info for the pg database by `heroku
    pg:credentials:url DATABASE` and the output will be sth. in the line of
 ```
-   Connection information for default credential.
-   Connection info string:
-      "dbname=DBNAME host=HOSTNAME
-      port=5432 user=USERNAME
-      password=PASSWORD
-      sslmode=require"
-      Connection URL:
-         postgres://USERNAME:PASSWORD@HOSTNAME:5432/DBNAME
+Connection information for default credential.
+Connection info string:
+"dbname=DBNAME host=HOSTNAME
+port=5432 user=USERNAME
+password=PASSWORD
+sslmode=require"
+Connection URL:
+   postgres://USERNAME:PASSWORD@HOSTNAME:5432/DBNAME
 ```
 
 4. Now `cd` into the `config` directory in you project folder and open up the
