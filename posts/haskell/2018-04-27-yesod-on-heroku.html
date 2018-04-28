@@ -13,7 +13,7 @@
   <link rel="shortcut icon" href="favicon.ico" type="image/x-icon"><link rel="shortcut icon" href="../../images/favicons/favicon32.png"><link rel="apple-touch-icon-precomposed" sizes="144x144" href="../../images/favicons/favicon144.png"><link rel="apple-touch-icon-precomposed" sizes="114x114" href="../../images/favicons/favicon114.png"><link rel="apple-touch-icon-precomposed" sizes="72x72" href="../../images/favicons/favicon72.png"><link rel="apple-touch-icon-precomposed" sizes="57x57" href="../../images/favicons/favicon57.png">
   <meta name="keywords" content="hakyll,static site generator,static,site,generator,haskell,blog" />
   <title>Deploy Yesod Applications to Heroku</title>
-  <meta name="description" content="In this post I will show you step by step guide on how to deploy an yesod application to heroku, with optional support of postgresql. If you follow this guide a">
+  <meta name="description" content="In this post I will show you a step by step guide on how to deploy an yesod application to heroku, with optional support of postgresql. If you follow this guide">
   <link rel="canonical" href="../../posts/haskell/2018-04-27-yesod-on-heroku.html">
   <link rel="alternate" type="application/atom+xml" title="Deploy Yesod Applications to Heroku" href="../../feed.xml" />
 
@@ -147,7 +147,7 @@
       </div>
 
       <article class="post-content">
-        <p>In this post I will show you step by step guide on how to deploy an yesod application to heroku, with optional support of postgresql. If you follow this guide along, you should have a demo application running on heroku inthe end.</p>
+        <p>In this post I will show you a step by step guide on how to deploy an yesod application to heroku, with optional support of postgresql. If you follow this guide along, you should have a demo application running on heroku inthe end.</p>
 <!--more-->
 <p>If you have not installed the heroku cli tools on your local computer, please do so now. I recommend that you follow the heroku documentation to install the cli tools and add your personal ssh key. You will also need to install the stack tool for building haskell applications on your local computer. Then come back to this guide.</p>
 <h3 id="create-a-new-project-and-set-up-git">Create a new project and set up git</h3>
@@ -163,14 +163,14 @@ git commit -m &quot;initial commit&quot;</code></pre></li>
 <li>Create a project on heroku server: <code>heroku apps:create appname -b    https://github.com/mfine/heroku-buildpack-stack.git</code>. Note we are using a special buildpack for deloying haskell application to heroku.</li>
 <li><p>Add the free “Hobby Dev Plan” posgresql add-on: <code>heroku addon:add    heroku-postgresql:hobby-dev</code>. More detalis <a href="https://devcenter.heroku.com/articles/heroku-postgresql#promote-your-database-and-begin-using-it">here</a>.</p></li>
 <li><p>Now you need to get the connection info for the pg database by <code>heroku    pg:credentials:url DATABASE</code> and the output will be sth. in the line of</p>
-<pre><code>   Connection information for default credential.
-   Connection info string:
-  &quot;dbname=DBNAME host=HOSTNAME
-  port=5432 user=USERNAME
-  password=PASSWORD
-  sslmode=require&quot;
-  Connection URL:
-     postgres://USERNAME:PASSWORD@HOSTNAME:5432/DBNAME</code></pre></li>
+<pre><code>Connection information for default credential.
+Connection info string:
+&quot;dbname=DBNAME host=HOSTNAME
+port=5432 user=USERNAME
+password=PASSWORD
+sslmode=require&quot;
+Connection URL:
+   postgres://USERNAME:PASSWORD@HOSTNAME:5432/DBNAME</code></pre></li>
 <li><p>Now <code>cd</code> into the <code>config</code> directory in you project folder and open up the <code>settings.yml</code> file and find the sectin called <code>database</code> and replace the credentials with what you find in previous step.</p></li>
 <li><p>Create <code>Procfile</code> in the root of your project directory and fill it with the following lines:</p>
 <pre><code>web: myproj</code></pre>
