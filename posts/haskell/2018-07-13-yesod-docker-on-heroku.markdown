@@ -1,12 +1,11 @@
 ---
-title: Deploy Yesod Applications to Heroku
+title: Deploy Yesod Applications to Heroku with Docker
 author: cohomology
-tags: haskell, yesod, heroku, postgresql
+tags: haskell, yesod, heroku, postgresql, docker
 ---
-
-In this post I will show you a step by step guide on how to deploy an yesod application 
-to heroku, with optional support of postgresql. If you follow this guide along,
-you should have a demo application running on heroku in the end.
+This post is based on a previous post but we will be pushing a docker image to
+heroku instead. If you follow this guide  step by step, 
+you should have a demo application running on heroku(in a docker container)! 
 
 <!--more-->
 
@@ -51,17 +50,24 @@ Connection URL:
    postgres://USERNAME:PASSWORD@HOSTNAME:5432/DBNAME
 ```
 
-4. Now `cd` into the `config` directory in you project folder and open up the
-   `settings.yml` file and find the sectin called `database` and replace the
-   credentials with what you find in previous step.
 
-5. Create `Procfile` in the root of your project directory and fill it with
-   the following lines:
-```
-web: myproj
-```
-   where myproj is the name you pick for your project(replace it with your real
-   project name).
+
+4. Now go to the heroku web console, click on the project that you just created,
+   then click on `Setting` and then `Config vars` and add these env vars to you
+   project: `YESOD_PGHOST`,`YESOD_PGPORT`, `YESOD_PGUSER`, `YESOD_PGPASS` and
+   `YESOD_PGDATABASE`, the values are those you got from the last step.  
+   N.B. the name of these variables may change from one build plan to another,
+   you would need to look at `config/settings.yaml` file to see what the names need
+   to be. 
+
+5. Now go visit `config/settings.yaml` and find the line `port
+   "_env:PORT:3000"` and make sure you have `PORT` and nothing else after the
+   `_env:`. This is very important because `PORT` is an env var set by heroku
+   and your app is only able to bind to this port. If you have anything else
+   there your app will fail to start.
+
+6. 6. 6. 6. 6. 6. 
+
 
 ### Deploy it
 Now your project is ready to be deployed! Just do `git push heroku`, go grab a
