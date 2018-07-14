@@ -12,10 +12,10 @@
   <!-- Metadata. -->
   <link rel="shortcut icon" href="favicon.ico" type="image/x-icon"><link rel="shortcut icon" href="../../images/favicons/favicon32.png"><link rel="apple-touch-icon-precomposed" sizes="144x144" href="../../images/favicons/favicon144.png"><link rel="apple-touch-icon-precomposed" sizes="114x114" href="../../images/favicons/favicon114.png"><link rel="apple-touch-icon-precomposed" sizes="72x72" href="../../images/favicons/favicon72.png"><link rel="apple-touch-icon-precomposed" sizes="57x57" href="../../images/favicons/favicon57.png">
   <meta name="keywords" content="hakyll,static site generator,static,site,generator,haskell,blog" />
-  <title>Deploy Yesod Applications to Heroku</title>
-  <meta name="description" content="In this post I will show you a step by step guide on how to deploy an yesod application to heroku, with optional support of postgresql. If you follow this guide">
-  <link rel="canonical" href="../../posts/haskell/2018-04-27-yesod-on-heroku.html">
-  <link rel="alternate" type="application/atom+xml" title="Deploy Yesod Applications to Heroku" href="../../feed.xml" />
+  <title>Deploy Yesod Applications to Heroku with Docker</title>
+  <meta name="description" content="This post is based on a previous post but we will be pushing a docker image to heroku instead. If you follow this guide step by step, you should have a demo app">
+  <link rel="canonical" href="../../posts/haskell/2018-07-13-yesod-docker-on-heroku.html">
+  <link rel="alternate" type="application/atom+xml" title="Deploy Yesod Applications to Heroku with Docker" href="../../feed.xml" />
 
   <!-- Stylesheets. -->
   <link rel="stylesheet" href="../../lib/materialize/css/materialize.min.css">
@@ -124,7 +124,7 @@
 
       <p class="grey-text">
         <i class="mdi mdi-calendar"></i>&nbsp;
-        Posted on April 27, 2018
+        Posted on July 13, 2018
         
           &nbsp;&nbsp;<i class="mdi mdi-account-circle"></i>&nbsp;
           by cohomology
@@ -132,22 +132,22 @@
         &nbsp;
         
           <i class="mdi mdi-folder"></i>&nbsp;
-          <span class="capitalize"><a href="../../categories/haskell.html">haskell</a></span>
+          <span class="capitalize"><a href="../../categories/haskell.html">haskell</a>, <a href="../../categories/docker.html">docker</a></span>
           <!-- &emsp;<i class="mdi mdi-refresh"></i>&nbsp;UPDATE: {% if page.update %}{{ page.update | date: "%b %-d, %Y" }}{% else %}{{ page.last_modified_at | date: "%b %-d, %Y" }}{% endif %} -->
         
       </p>
 
       <div class="post-header">
-        <h1 class="post-title">Deploy Yesod Applications to Heroku</h1>
+        <h1 class="post-title">Deploy Yesod Applications to Heroku with Docker</h1>
 
         
           <i class="post-tag mdi mdi-tag-multiple waves-effect waves-light"></i>
-          <div class="chip"><a href="../../tags/haskell.html">haskell</a>, <a href="../../tags/yesod.html">yesod</a>, <a href="../../tags/heroku.html">heroku</a>, <a href="../../tags/postgresql.html">postgresql</a></div>
+          <div class="chip"><a href="../../tags/haskell.html">haskell</a>, <a href="../../tags/yesod.html">yesod</a>, <a href="../../tags/heroku.html">heroku</a>, <a href="../../tags/postgresql.html">postgresql</a>, <a href="../../tags/docker.html">docker</a></div>
         
       </div>
 
       <article class="post-content">
-        <p>In this post I will show you a step by step guide on how to deploy an yesod application to heroku, with optional support of postgresql. If you follow this guide along, you should have a demo application running on heroku in the end.</p>
+        <p>This post is based on a previous post but we will be pushing a docker image to heroku instead. If you follow this guide step by step, you should have a demo application running on heroku(in a docker container)!</p>
 <!--more-->
 <p>If you have not installed the heroku cli tools on your local computer, please do so now. I recommend that you follow the heroku documentation to install the cli tools and add your personal ssh key. You will also need to install the stack tool for building haskell applications on your local computer. Then come back to this guide.</p>
 <h3 id="create-a-new-project-and-set-up-git">Create a new project and set up git</h3>
@@ -171,10 +171,20 @@ password=PASSWORD
 sslmode=require&quot;
 Connection URL:
    postgres://USERNAME:PASSWORD@HOSTNAME:5432/DBNAME</code></pre></li>
-<li><p>Now <code>cd</code> into the <code>config</code> directory in you project folder and open up the <code>settings.yml</code> file and find the sectin called <code>database</code> and replace the credentials with what you find in previous step.</p></li>
-<li><p>Create <code>Procfile</code> in the root of your project directory and fill it with the following lines:</p>
-<pre><code>web: myproj</code></pre>
-<p>where myproj is the name you pick for your project(replace it with your real project name).</p></li>
+<li><p>Now go to the heroku web console, click on the project that you just created, then click on <code>Setting</code> and then <code>Config vars</code> and add these env vars to you project: <code>YESOD_PGHOST</code>,<code>YESOD_PGPORT</code>, <code>YESOD_PGUSER</code>, <code>YESOD_PGPASS</code> and <code>YESOD_PGDATABASE</code>, the values are those you got from the last step.<br />
+N.B. the name of these variables may change from one build plan to another, you would need to look at <code>config/settings.yaml</code> file to see what the names need to be.</p></li>
+<li><p>Now go visit <code>config/settings.yaml</code> and find the line <code>port    &quot;_env:PORT:3000&quot;</code> and make sure you have <code>PORT</code> and nothing else after the <code>_env:</code>. This is very important because <code>PORT</code> is an env var set by heroku and your app is only able to bind to this port. If you have anything else there your app will fail to start.</p></li>
+<li><ol start="6" style="list-style-type: decimal">
+<li><ol start="6" style="list-style-type: decimal">
+<li><ol start="6" style="list-style-type: decimal">
+<li><ol start="6" style="list-style-type: decimal">
+<li><ol start="6" style="list-style-type: decimal">
+<li></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
 </ol>
 <h3 id="deploy-it">Deploy it</h3>
 <p>Now your project is ready to be deployed! Just do <code>git push heroku</code>, go grab a drink and come back in 20 minutes or so and you should see the demo application running on heroku! Congratulations!</p>

@@ -20,6 +20,12 @@
     </url>
 
     <url>
+        <loc>https://futtetennismo.me/posts/haskell/2018-07-13-yesod-docker-on-heroku.html</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+
+    <url>
         <loc>https://futtetennismo.me/posts/haskell/2018-04-27-yesod-on-heroku.html</loc>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
