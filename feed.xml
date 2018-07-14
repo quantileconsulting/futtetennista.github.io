@@ -42,35 +42,68 @@ Connection URL:
 <li><p>Now go to the heroku web console, click on the project that you just created, then click on <code>Setting</code> and then <code>Config vars</code> and add these env vars to you project: <code>YESOD_PGHOST</code>,<code>YESOD_PGPORT</code>, <code>YESOD_PGUSER</code>, <code>YESOD_PGPASS</code> and <code>YESOD_PGDATABASE</code>, the values are those you got from the last step.<br />
 N.B. the name of these variables may change from one build plan to another, you would need to look at <code>config/settings.yaml</code> file to see what the names need to be.</p></li>
 <li><p>Now go visit <code>config/settings.yaml</code> and find the line <code>port    &quot;_env:PORT:3000&quot;</code> and make sure you have <code>PORT</code> and nothing else after the <code>_env:</code>. This is very important because <code>PORT</code> is an env var set by heroku and your app is only able to bind to this port. If you have anything else there your app will fail to start.</p></li>
-<li><p>Now create the <code>Dockerfile</code> and fill it with the following content ``` FROM heroku/heroku:16</p></li>
+<li><p>Now create the <code>Dockerfile</code> and fill it with the following content</p></li>
 </ol>
-<p>ENV LANG C.UTF-8</p>
-<h1 id="install-required-packages.">Install required packages.</h1>
-<p>RUN apt-get update RUN apt-get upgrade -y –assume-yes # Install packages for stack and ghc. RUN apt-get install -y –assume-yes xz-utils gcc libgmp-dev zlib1g-dev # Install packages needed for libraries used by our app. RUN apt-get install -y –assume-yes libpq-dev # Install convenience utilities, like tree, ping, and vim. RUN apt-get install -y –assume-yes tree iputils-ping vim-nox</p>
-<h1 id="remove-apt-caches-to-reduce-the-size-of-our-container.">Remove apt caches to reduce the size of our container.</h1>
-<p>RUN rm -rf /var/lib/apt/lists/*</p>
-<h1 id="install-stack-to-optstackbin.">Install stack to /opt/stack/bin.</h1>
-<p>RUN mkdir -p /opt/stack/bin RUN curl -L https://www.stackage.org/stack/linux-x86_64 | tar xz –wildcards –strip-components=1 -C /opt/stack/bin ’*/stack’</p>
-<h1 id="create-optyesod-pg-dockerbin-and-optyesod-pg-dockersrc.-set">Create /opt/yesod-pg-docker/bin and /opt/yesod-pg-docker/src. Set</h1>
-<h1 id="optyesod-pg-dockersrc-as-the-working-directory.">/opt/yesod-pg-docker/src as the working directory.</h1>
-<p>RUN mkdir -p /opt/yesod-pg-docker/src RUN mkdir -p /opt/yesod-pg-docker/bin WORKDIR /opt/yesod-pg-docker/src</p>
-<h1 id="set-the-path-for-the-root-user-so-they-can-use-stack.">Set the PATH for the root user so they can use stack.</h1>
-<p>ENV PATH “$PATH:/opt/stack/bin:/opt/yesod-pg-docker/bin”</p>
-<h1 id="install-ghc-using-stack-based-on-your-apps-stack.yaml-file.">Install GHC using stack, based on your app’s stack.yaml file.</h1>
-<p>COPY ./stack.yaml /opt/yesod-pg-docker/src/stack.yaml RUN stack –no-terminal setup</p>
-<h1 id="install-all-dependencies-in-apps-.cabal-file.">Install all dependencies in app’s .cabal file.</h1>
-<p>COPY ./yesod-pg-docker.cabal /opt/yesod-pg-docker/src/yesod-pg-docker.cabal RUN stack –no-terminal test –only-dependencies</p>
-<h1 id="build-application.">Build application.</h1>
-<p>COPY . /opt/yesod-pg-docker RUN stack –no-terminal build</p>
-<h1 id="install-application-binaries-to-optyesod-pg-dockerbin.">Install application binaries to /opt/yesod-pg-docker/bin.</h1>
-<p>RUN stack –no-terminal –local-bin-path /opt/yesod-pg-docker/bin install</p>
-<h1 id="remove-source-code.">Remove source code.</h1>
-<h1 id="run-rm--rf-optyesod-pg-dockersrc">RUN rm -rf /opt/yesod-pg-docker/src</h1>
-<h1 id="add-the-apiuser-and-setup-their-path.">Add the apiuser and setup their PATH.</h1>
-<p>RUN useradd -ms /bin/bash apiuser RUN chown -R apiuser:apiuser /opt/yesod-pg-docker USER apiuser ENV PATH “$PATH:/opt/stack/bin:/opt/yesod-pg-docker/bin”</p>
-<h1 id="set-the-working-directory-as-optyesod-pg-docker.">Set the working directory as /opt/yesod-pg-docker/.</h1>
-<p>WORKDIR /opt/yesod-pg-docker</p>
-<p>CMD /opt/yesod-pg-docker/bin/yesod-pg-docker-api ``<code>You may want to search and replace</code>yesod-pg-docker<code>by the name of your own   app in this</code>Dockefile`.</p>
+<pre><code>FROM heroku/heroku:16
+
+ENV LANG C.UTF-8
+
+# Install required packages.
+RUN apt-get update
+RUN apt-get upgrade -y --assume-yes
+# Install packages for stack and ghc.
+RUN apt-get install -y --assume-yes xz-utils gcc libgmp-dev zlib1g-dev
+# Install packages needed for libraries used by our app.
+RUN apt-get install -y --assume-yes libpq-dev
+# Install convenience utilities, like tree, ping, and vim.
+RUN apt-get install -y --assume-yes tree iputils-ping vim-nox
+
+# Remove apt caches to reduce the size of our container.
+RUN rm -rf /var/lib/apt/lists/*
+
+# Install stack to /opt/stack/bin.
+RUN mkdir -p /opt/stack/bin
+RUN curl -L https://www.stackage.org/stack/linux-x86_64 | tar xz --wildcards
+--strip-components=1 -C /opt/stack/bin &#39;*/stack&#39;
+
+# Create /opt/yesod-pg-docker/bin and /opt/yesod-pg-docker/src.  Set
+# /opt/yesod-pg-docker/src as the working directory.
+RUN mkdir -p /opt/yesod-pg-docker/src
+RUN mkdir -p /opt/yesod-pg-docker/bin
+WORKDIR /opt/yesod-pg-docker/src
+
+# Set the PATH for the root user so they can use stack.
+ENV PATH &quot;$PATH:/opt/stack/bin:/opt/yesod-pg-docker/bin&quot;
+
+# Install GHC using stack, based on your app&#39;s stack.yaml file.
+COPY ./stack.yaml /opt/yesod-pg-docker/src/stack.yaml
+RUN stack --no-terminal setup
+
+# Install all dependencies in app&#39;s .cabal file.
+COPY ./yesod-pg-docker.cabal /opt/yesod-pg-docker/src/yesod-pg-docker.cabal
+RUN stack --no-terminal test --only-dependencies
+
+# Build application.
+COPY . /opt/yesod-pg-docker
+RUN stack --no-terminal build
+
+# Install application binaries to /opt/yesod-pg-docker/bin.
+RUN stack --no-terminal --local-bin-path /opt/yesod-pg-docker/bin install
+
+# Remove source code.
+#RUN rm -rf /opt/yesod-pg-docker/src
+
+# Add the apiuser and setup their PATH.
+RUN useradd -ms /bin/bash apiuser
+RUN chown -R apiuser:apiuser /opt/yesod-pg-docker
+USER apiuser
+ENV PATH &quot;$PATH:/opt/stack/bin:/opt/yesod-pg-docker/bin&quot;
+
+# Set the working directory as /opt/yesod-pg-docker/.
+WORKDIR /opt/yesod-pg-docker
+
+CMD /opt/yesod-pg-docker/bin/yesod-pg-docker-api</code></pre>
+<p>You may want to search and replace <code>yesod-pg-docker</code> by the name of your own app in this <code>Dockefile</code>.</p>
 <h3 id="deploy-it">Deploy it</h3>
 <p>Now your project is ready to be deployed! Just do <code>heroku container:push web; heroku container:release web</code>, go grab a drink and come back in 20 minutes or so and you should see the demo application running on heroku! Congratulations!</p>]]></summary>
 </entry>
