@@ -67,6 +67,7 @@ Connection URL:
    there your app will fail to start.
 
 6. Now create the `Dockerfile` and fill it with the following content
+
 ```
 FROM heroku/heroku:16
 
@@ -128,7 +129,8 @@ WORKDIR /opt/yesod-pg-docker
 
 CMD /opt/yesod-pg-docker/bin/yesod-pg-docker-api
 ```
-  You may want to search and replace `yesod-pg-docker` by the name of your own
+
+You may want to search and replace `yesod-pg-docker` by the name of your own
   app in this `Dockefile`. 
 
 
